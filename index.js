@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 
-// Routes
 const vastRouter = require('./routes/vast');
 
 const app = express();
@@ -30,6 +29,12 @@ app.use(cors({
   credentials: true
 }));
 
+const requestTime = function (req, res, next) {
+  req.requestTime = Date.now();
+  next();
+};
+
+app.use(requestTime);
 app.use('/vast', vastRouter);
 
 app.get('/', (req, res) => {

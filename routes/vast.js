@@ -29,7 +29,8 @@ router.get('/:supplyTagId', function (req, res, next) {
   // Geo, Country
   const geo = geoip.lookup(ip);
 
-  console.log('vast > supply tag id >', supplyTagId, ip, geo);
+
+  console.log('vast >', req.requestTime, supplyTagId, ip, geo);
   console.log(width, height, visibility, url, domain, gdpr, consent, usp, schain);
 
   // geo
