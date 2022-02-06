@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/:supplyTagId', function (req, res, next) {
 
   // Params
-  let ip = req.headers['x-forwarded-for'] || req.ip; //"207.97.227.239";
+  let ip = req.headers['x-forwarded-for'] || req.ip;
   const supplyTagId = req.params.supplyTagId;
 
   // Queries
@@ -16,9 +16,21 @@ router.get('/:supplyTagId', function (req, res, next) {
     ip = req.query.ip;
   }
 
+  const width = req.query.w; // Width
+  const height = req.query.h; // Height
+  const visibility = req.query.v; // Visibility
+  const url = req.query.url; // Page URL
+  const domain = req.query.dom; // Domain
+  const gdpr = req.query.gdpr; // GDPR
+  const consent = req.query.consent; // GDPR Consent
+  const usp = req.query.usp; // US Privacy
+  const schain = req.query.schain; // Supply Chain
+
+  // Geo, Country
   const geo = geoip.lookup(ip);
 
   console.log('vast > supply tag id >', supplyTagId, ip, geo);
+  console.log(width, height, visibility, url, domain, gdpr, consent, usp, schain);
 
   // geo
   /*
