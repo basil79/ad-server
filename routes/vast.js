@@ -20,6 +20,21 @@ router.get('/:supplyTagId', function (req, res, next) {
 
   console.log('vast > supply tag id >', supplyTagId, ip, geo);
 
+  // geo
+  /*
+  {
+    range: [ 2967774208, 2967774719 ],
+    country: 'IL',
+    region: 'M',
+    eu: '0',
+    timezone: 'Asia/Jerusalem',
+    city: 'Kefar Vitqin',
+    ll: [ 32.3813, 34.8774 ],
+    metro: 0,
+    area: 5
+  }
+   */
+
   const data = {
     VAST: [{
       _attr: {
