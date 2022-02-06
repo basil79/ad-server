@@ -1,0 +1,44 @@
+{
+  "name": "ad-server",
+  "version": "1.0.0",
+  "description": "Ad Server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/basil79/ad-server.git"
+  },
+  "keywords": [
+    "ad-server",
+    "advertising",
+    "video-ads",
+    "waterfall",
+    "header-bidding",
+    "iab",
+    "video",
+    "instream",
+    "outstream"
+  ],
+  "author": "Basil Goldman",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/basil79/ad-server/issues"
+  },
+  "homepage": "https://github.com/basil79/ad-server#readme",
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "debug": "^4.3.3",
+    "express": "^4.17.2",
+    "geoip-lite": "^1.4.3",
+    "morgan": "^1.10.0",
+    "xml": "^1.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.8.0"
+  }
+}
