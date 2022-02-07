@@ -4,8 +4,7 @@ const xml = require('xml');
 const geoip = require('geoip-lite');
 const router = express.Router();
 
-
-router.get('/:supplyTagId', function (req, res, next) {
+router.get('/:supplyTagId', (req, res, next) => {
 
   // Params
   const ua = req.headers['user-agent'];

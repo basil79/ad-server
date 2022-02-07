@@ -38,10 +38,11 @@ app.use(requestTime);
 app.use(useragent.express());
 app.use('/vast', vastRouter);
 
+/*
 app.get('/', (req, res) => {
-  console.log(req.ip);
   res.send('Hello World!')
 });
+ */
 
 app.listen(port, () => {
   console.log(`listening on port ${port}!`)
