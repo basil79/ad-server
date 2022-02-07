@@ -8,30 +8,43 @@ const router = express.Router();
 router.get('/:supplyTagId', function (req, res, next) {
 
   // Params
-  let ip = req.headers['x-forwarded-for'] || req.ip;
+  const ua = req.headers['user-agent'];
+
+  const host = req.headers['host'];
+  const origin = req.headers['origin'];
+  let hostname = req.hostname;
+  if(origin) {
+    try {
+      hostname = new URL(origin).hostname;
+    } catch (e) {}
+  }
+
+  console.log('hostname', hostname);
+
   const supplyTagId = req.params.supplyTagId;
 
-  // Queries
+  let ip = req.headers['x-forwarded-for'] || req.ip;
   if(req.query.ip && net.isIP(req.query.ip)) {
     ip = req.query.ip;
   }
 
+  // Queries
   const width = req.query.w; // Width
   const height = req.query.h; // Height
   const visibility = req.query.v; // Visibility
   const url = req.query.url; // Page URL
-  const domain = req.query.dom; // Domain
+  const domain = req.query.domain; // Domain
   const gdpr = req.query.gdpr; // GDPR
   const consent = req.query.consent; // GDPR Consent
   const usp = req.query.usp; // US Privacy
   const schain = req.query.schain; // Supply Chain
 
+  let country = 'N/A';
   // Geo, Country
   const geo = geoip.lookup(ip);
-
-
-  console.log('vast >', req.requestTime, supplyTagId, ip, geo);
-  console.log(width, height, visibility, url, domain, gdpr, consent, usp, schain);
+  if(geo) {
+    country = geo.country;
+  }
 
   // geo
   /*
@@ -47,6 +60,11 @@ router.get('/:supplyTagId', function (req, res, next) {
     area: 5
   }
    */
+
+  console.log('is mobile or tablet', req.useragent.browser, req.useragent.isMobile, req.useragent.isDesktop);
+
+  console.log('vast >', req.requestTime, supplyTagId, ip, country, hostname, ua);
+  console.log(width, height, visibility, url, domain, gdpr, consent, usp, schain);
 
   const data = {
     VAST: [{

@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-
+const useragent = require('express-useragent');
 const vastRouter = require('./routes/vast');
 
 const app = express();
@@ -35,6 +35,7 @@ const requestTime = function (req, res, next) {
 };
 
 app.use(requestTime);
+app.use(useragent.express());
 app.use('/vast', vastRouter);
 
 app.get('/', (req, res) => {

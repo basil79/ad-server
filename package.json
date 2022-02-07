@@ -34,6 +34,7 @@
     "cors": "^2.8.5",
     "debug": "^4.3.3",
     "express": "^4.17.2",
+    "express-useragent": "^1.0.15",
     "geoip-lite": "^1.4.3",
     "morgan": "^1.10.0",
     "xml": "^1.0.1"
