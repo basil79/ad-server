@@ -1,6 +1,6 @@
 const { Client } = require('@elastic/elasticsearch');
 const config = require('../config.json');
-const DemandTags = require('../controllers/demand-tags');
+const DemandTags = require('./demand-tags');
 
 class AdServe {
   constructor(config) {
