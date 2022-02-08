@@ -1,3 +1,5 @@
+const DemandTag = require('../models/demand-tag');
+
 class DemandTags {
   constructor(elasticClient) {
     this.elasticClient = elasticClient
@@ -25,6 +27,8 @@ class DemandTags {
 
         // Result
         // TODO:
+        const demandTag = new DemandTag();
+        console.log(demandTag);
         // Resolve
         res({});
 
