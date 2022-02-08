@@ -2,7 +2,9 @@ const net = require('net');
 const express = require('express');
 const xml = require('xml');
 const geoip = require('geoip-lite');
+const adserve = require('../models');
 const router = express.Router();
+
 
 router.get('/:supplyTagId', (req, res, next) => {
 
@@ -60,12 +62,14 @@ router.get('/:supplyTagId', (req, res, next) => {
   }
    */
 
+  const device = req.useragent.isMobile ? 'Mobile' : 'Desktop';
+
   console.log('is mobile or tablet', req.useragent.browser, req.useragent.isMobile, req.useragent.isDesktop);
 
-  console.log('vast >', req.requestTime, supplyTagId, ip, country, hostname, ua);
+  console.log('vast >', req.requestTime, supplyTagId, ip, country, hostname, device, ua);
   console.log(width, height, visibility, url, domain, gdpr, consent, usp, schain);
 
-  const data = {
+  const vast = {
     VAST: [{
       _attr: {
         version: '2.0'
@@ -73,9 +77,24 @@ router.get('/:supplyTagId', (req, res, next) => {
     }]
   }
 
-  res
-    .set('Content-Type', 'text/xml')
-    .send(xml(data, { indent: true, declaration: true }));
+  adserve
+    .demandTags()
+    .get(null, supplyTagId, country, hostname, visibility, device)
+    .then((data) => {
+      console.log(data);
+
+    })
+    .catch((err) => {
+      console.log(err.message);
+
+    })
+    .finally(() => {
+
+      res
+        .set('Content-Type', 'text/xml')
+        .send(xml(vast, { indent: true, declaration: true }));
+
+    });
 
 });
 
