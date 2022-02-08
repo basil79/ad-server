@@ -6,7 +6,7 @@ const adserve = require('../models');
 const router = express.Router();
 
 
-router.get('/:supplyTagId', (req, res, next) => {
+router.get('/:supplyTagId', (req, res) => {
 
   // Params
   const ua = req.headers['user-agent'];

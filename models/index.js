@@ -1,5 +1,5 @@
 const { Client } = require('@elastic/elasticsearch');
-const config = require('../config');
+const config = require('../config.json');
 const DemandTags = require('../controllers/demand-tags');
 
 class AdServe {
@@ -30,7 +30,4 @@ class AdServe {
 const adserve = new AdServe(config);
 
 module.exports = adserve
-
-
-
 
