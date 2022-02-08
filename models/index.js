@@ -17,7 +17,7 @@ class AdServe {
   }
   getElasticClientConfig(config) {
     const elasticConfig = config.elastic;
-    if(elasticConfig) {
+    if(!elasticConfig) {
       return this.getElasticDefaultClientConfig()
     }
     return elasticConfig;
