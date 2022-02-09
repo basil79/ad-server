@@ -5,7 +5,6 @@ const geoip = require('geoip-lite');
 const adserve = require('../models');
 const router = express.Router();
 
-
 router.get('/:supplyTagId', (req, res) => {
 
   // Params

@@ -5,10 +5,13 @@ const DemandTags = require('../services/demand-tags');
 class AdServe {
   constructor(config) {
     this.config = config;
-    this.elasticClient = new Client(this.getElasticClientConfig(this.config))
+    // Clients
+    this.elasticClient = new Client(this.getElasticClientConfig(this.config));
+    // Services
+    this.demandTagsService = new DemandTags(this.elasticClient);
   }
   demandTags() {
-    return new DemandTags(this.elasticClient);
+    return this.demandTagsService;
   }
   getElasticDefaultClientConfig() {
     return {
