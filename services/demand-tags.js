@@ -13,7 +13,6 @@ class DemandTags {
         }
       }
 
-      // Search
       this.elasticClient.search({
         index: 'demand-tags',
         body: {
@@ -21,19 +20,16 @@ class DemandTags {
         }
       }, (err, result) => {
         if(err) {
-          // Reject
           rej(err)
+        } else {
+          // Result
+          // TODO:
+          const demandTag = new DemandTag({});
+          console.log(demandTag);
+          // Resolve
+          res({});
         }
-
-        // Result
-        // TODO:
-        const demandTag = new DemandTag();
-        console.log(demandTag);
-        // Resolve
-        res({});
-
-      })
-
+      });
     });
   }
   getMany(supplyTagId) {

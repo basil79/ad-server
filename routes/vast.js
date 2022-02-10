@@ -88,7 +88,7 @@ router.get('/:supplyTagId', (req, res) => {
 
     })
     .finally(() => {
-
+      // TODO:
       res
         .set('Content-Type', 'text/xml')
         .send(xml(vast, { indent: true, declaration: true }));
