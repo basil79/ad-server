@@ -3,8 +3,8 @@ const cors = require('cors');
 const useragent = require('express-useragent');
 const trackRouter = require('./routes/track');
 const vastRouter = require('./routes/vast');
-const net = require("net");
-const crypto = require("crypto");
+const net = require('net');
+const crypto = require('crypto');
 
 const app = express();
 const port = normalizePort(process.env.PORT || '3000');
