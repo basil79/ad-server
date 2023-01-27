@@ -37,7 +37,9 @@
     "express": "^4.17.2",
     "express-useragent": "^1.0.15",
     "geoip-lite": "^1.4.3",
-    "morgan": "^1.10.0",
+    "mysql": "^2.18.1",
+    "winston": "^3.4.0",
+    "winston-elasticsearch": "^0.16.1",
     "xml": "^1.0.1"
   },
   "devDependencies": {
