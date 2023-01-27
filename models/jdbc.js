@@ -34,7 +34,7 @@ class JDBCRepository {
     this.jdbcClient = jdbcClient;
   }
   procedureQuery(procedureName, params, callback) {
-    let query = `CALL ${procedureName}(${params.map(() => '?')})`;
+    const query = `CALL ${procedureName}(${params.map(() => '?')})`;
     this.jdbcClient.getConnection(function(conn) {
       // check conn
       conn.query(query, params.map(param => param.value), (err, rows) => {
