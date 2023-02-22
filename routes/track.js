@@ -51,7 +51,7 @@ router.get('/', (req, res) => {
 
   // Targeting
   let countryCode = req.query.cc || 'N/A';
-  const viewability = req.query.v || 1;
+  const visibility = req.query.v || 1;
   const device = req.query.dev;
   const domain = req.query.dom || '';
   const browser = req.query.bw || req.useragent.browser;
@@ -80,7 +80,7 @@ router.get('/', (req, res) => {
     floor,
     country_code: countryCode, // Targeting group
     ip,
-    viewability,
+    visibility,
     device,
     domain,
     browser,
