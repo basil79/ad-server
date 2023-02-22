@@ -13,7 +13,7 @@ Examples of tags with default macros are as follows:
 
 
 Additional Macros:
-- &v={{VISIBILTY}}
+- &v={{VISIBILITY}}
 - &gdpr={{GDPR}}
 - &gdpr_consent={{GDPR_CONSENT}}
 - &usp={{US_PRIVACY}}
