@@ -38,7 +38,7 @@ const TRANSPARENT_GIF_BUFFER = Buffer.from('R0lGODlhAQABAIAAAP///wAAACwAAAAAAQAB
 
 
 // http://localhost:3000/track?evt=imp&st=3&sid=e3f117adaf4abdb2dae4a08ba40e4c3a
-router.get('/', (req, res, next) => {
+router.get('/', (req, res) => {
 
   const event = req.query.evt;
   const value = req.query.val;
@@ -72,16 +72,16 @@ router.get('/', (req, res, next) => {
   // Log structure
   const log = {
     session_id: sessionId,
-    event: event, // req, imp, alo
-    value: value,
+    event, // req, imp, alo
+    value,
     supply_tag_id: supplyTagId,
     demand_tag_id: demandTagId,
-    cpm: cpm,
-    floor: floor,
+    cpm,
+    floor,
     country_code: countryCode, // Targeting group
     ip,
     viewability,
-    device: device,
+    device,
     domain,
     browser,
     os,
