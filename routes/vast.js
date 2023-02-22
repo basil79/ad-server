@@ -39,11 +39,11 @@ router.get('/:supplyTagId', (req, res) => {
     ip = req.query.ip;
   }
 
-  let country = 'N/A';
+  let countryCode = 'N/A';
   // Geo, Country
   const geo = geoip.lookup(ip); // '87.70.14.10'
   if(geo) {
-    country = geo.country;
+    countryCode = geo.country;
     console.log('geo', geo);
   }
 
@@ -66,37 +66,16 @@ router.get('/:supplyTagId', (req, res) => {
 
   console.log('is mobile or tablet', req.useragent.browser, req.useragent.isMobile, req.useragent.isDesktop);
 
-  console.log('vast >', req.requestTime, supplyTagId, ip, country, hostname, device, req.useragent.source);
+  console.log('vast >', req.requestTime, supplyTagId, ip, countryCode, hostname, device, req.useragent.source);
   console.log(width, height, visibility, url, domain, gdpr, gdprConsent, usp, schain);
 
-  const emptyVAST = {
+  const EMPTY_VAST = {
     VAST: [{
       _attr: {
         version: '2.0'
       }
     }]
   }
-
-  /*
-  adserve
-    .demandTags()
-    .get(null, supplyTagId, country, hostname, visibility, device)
-    .then((data) => {
-      console.log('supply tag');
-      console.log(data);
-    })
-    .catch((err) => {
-      console.log(err.message);
-
-    })
-    .finally(() => {
-      // TODO:
-      res
-        .set('Content-Type', 'text/xml')
-        .send(xml(vast, { indent: true, declaration: true }));
-
-    });
-   */
 
   adserve
     .supplyTags()
@@ -111,78 +90,96 @@ router.get('/:supplyTagId', (req, res) => {
           .getMany(null, null, null, supplyTagId)
           .then((demandTags) => {
 
-            //console.log(demandTags);
+            console.log(demandTags);
+            console.log(demandTags.total);
+            if(demandTags.total != 0) {
 
-            const vast = {
-              VAST: [
-                { _attr: { version: '2.0' }},
-                { Ad: [
-                  { _attr: { id: supplyTag.id }},
-                    { InLine: [
-                        { AdSystem: [{ _attr: { version: '1' }}, 'AdServe'] },
-                        { AdTitle: 'Signe Inline Linear' },
-                        { Error: { _cdata: host + '/track?evt=err&st=' + supplyTagId + '&val=[ERRORCODE]&sid=' + req.hash } },
-                        { Impression: { _cdata: host + '/track?evt=imp&st=' + supplyTagId + '&sid=' + req.hash } },
-                        { Creatives: [
-                            { Creative: [
-                                { _attr: { sequence: '1', AdID: supplyTagId }},
-                                { Linear: [
-                                    { Duration: '00:00:30' },
-                                    { AdParameters: {
-                                      _cdata: JSON.stringify({
-                                        sid: req.hash,
-                                        width,
-                                        height,
-                                        visibility,
-                                        url,
-                                        gdpr,
-                                        gdprConsent,
-                                        usp,
-                                        schain
-                                      })
-                                      }
-                                    },
-                                    /*{ TrackingEvents: [
-                                        { Tracking: { _attr: { event: 'start'}, _cdata: ''}}
-                                      ]
-                                    },*/
-                                    { MediaFiles: [
-                                        { MediaFile: {
-                                          _attr: {
-                                            delivery: 'progressive',
-                                            type: 'application/javascript',
-                                            width: 300,
-                                            height: 250,
-                                            apiFramework: 'VPAID'
-                                          },
-                                          _cdata: ''
-                                          }
+              const VAST = {
+                VAST: [
+                  {_attr: {version: '2.0'}},
+                  {
+                    Ad: [
+                      {_attr: {id: supplyTag.id}},
+                      {
+                        InLine: [
+                          {AdSystem: [{_attr: {version: '1'}}, 'AdServe']},
+                          {Error: {_cdata: host + '/track?evt=err&st=' + supplyTagId + '&val=[ERRORCODE]&sid=' + req.hash}},
+                          {Impression: {_cdata: host + '/track?evt=imp&st=' + supplyTagId + '&sid=' + req.hash}},
+                          {
+                            Creatives: [
+                              {
+                                Creative: [
+                                  {_attr: {sequence: '1', AdID: supplyTagId}},
+                                  {
+                                    Linear: [
+                                      {Duration: '00:00:30'},
+                                      {
+                                        AdParameters: {
+                                          _cdata: JSON.stringify({
+                                            sid: req.hash,
+                                            st: supplyTag.id,
+                                            tags: demandTags.list,
+                                            width,
+                                            height,
+                                            visibility,
+                                            url,
+                                            gdpr,
+                                            gdprConsent,
+                                            usp,
+                                            schain
+                                          })
                                         }
-                                      ]
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            };
+                                      },
+                                      /*{ TrackingEvents: [
+                                          { Tracking: { _attr: { event: 'start'}, _cdata: ''}}
+                                        ]
+                                      },*/
+                                      {
+                                        MediaFiles: [
+                                          {
+                                            MediaFile: {
+                                              _attr: {
+                                                delivery: 'progressive',
+                                                type: 'application/javascript',
+                                                width: width,
+                                                height: height,
+                                                apiFramework: 'VPAID'
+                                              },
+                                              _cdata: ''
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              };
 
-            res
-              .set('Content-Type', 'text/xml')
-              .send(xml(vast, { indent: true, declaration: true }));
+              res
+                .set('Content-Type', 'text/xml')
+                .send(xml(VAST, { indent: true, declaration: true }));
+            } else {
+              // Empty VAST
+              res
+                .set('Content-Type', 'text/xml')
+                .send(xml(EMPTY_VAST, { indent: true, declaration: true }));
+            }
 
           })
           .catch((err) => {
             console.log(err);
+            // Empty VAST
             res
               .set('Content-Type', 'text/xml')
-              .send(xml(emptyVAST));
+              .send(xml(EMPTY_VAST, { indent: true, declaration: true }));
           });
 
       } else {
@@ -194,6 +191,8 @@ router.get('/:supplyTagId', (req, res) => {
       console.log(err);
       res.status(500).send(err.message);
     });
+
+  // .header('Access-Control-Allow-Credentials', true)
 
 });
 

@@ -24,7 +24,7 @@ function normalizePort(val) {
 }
 
 app.use(cors({
-  origin: function(origin, callback) {
+  origin: function(origin, callback){
     return callback(null, true);
   },
   optionsSuccessStatus: 200,

@@ -2,7 +2,6 @@ class DemandTag {
   constructor(json) {
     this.id = json.id;
     this.name = json.name;
-    this.supplyTagId = json.supply_tag_id;
     this.vastUrl = json.vast_url;
     this.bidder = json.bidder;
     this.tier = json.tier;
@@ -14,16 +13,13 @@ class DemandTag {
     this.timeout = json.timeout;
     this.insertDate = json.insert_date;
     this.modifyDate = json.modify_date;
-    this.isActive = Boolean(json.is_active)
+    this.isActive = Boolean(json.is_active);
   }
   getId() {
     return this.id
   }
   getName() {
     return this.name;
-  }
-  getSupplyTagId() {
-    return this.supplyTagId
   }
   getVastUrl() {
     return this.vastUrl
