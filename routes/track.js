@@ -1,38 +1,8 @@
 const express = require('express');
-const router = express.Router();
-const winston = require('winston');
-const winstonElasticsearch = require('winston-elasticsearch');
 const net = require('net');
 const geoip = require('geoip-lite');
-
-const esTransportOpts = {
-  level: 'info',
-  indexPrefix: 'log',
-  indexSuffixPattern: 'YYYY-MM-DD',
-  clientOpts : {
-    node: 'http://localhost:9200', //process.env.ES_ADDON_URI, // TODO
-    maxRetries: 5,
-    requestTimeout: 10000,
-    sniffOnStart: false,
-    /*auth: {
-      username: process.env.ES_ADDON_USER,
-      password: process.env.ES_ADDON_PASSWORD
-    }*/
-  },
-  source: process.env.LOG_SOURCE || 'api'
-};
-
-const esTransport = new winstonElasticsearch.ElasticsearchTransport(esTransportOpts);
-
-const logger = winston.createLogger({
-  transports: [
-    new winston.transports.Console({
-      level: 'info',
-      json: true
-    }),
-    esTransport //Add es transport
-  ]
-});
+const router = express.Router();
+const logger = require('../services/logger');
 
 const TRANSPARENT_GIF_BUFFER = Buffer.from('R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=', 'base64');
 
@@ -43,20 +13,22 @@ router.get('/', (req, res) => {
   const event = req.query.evt;
   const value = req.query.val;
   const sessionId = req.query.sid;
-  const supplyTagId = req.query.st;
-  const demandTagId = req.query.dt;
+  const supplyTagId = Number(req.query.st) || null;
+  const demandTagId = Number(req.query.dt) || null;
 
+  // Demand tag value
   const cpm = req.query.cpm;
   const floor = req.query.floor;
 
   // Targeting
   let countryCode = req.query.cc || 'N/A';
   const visibility = req.query.v || 1;
-  const device = req.query.dev;
+  const device = req.query.dev || req.useragent.isMobile ? 'Mobile' : 'Desktop';
   const domain = req.query.dom || '';
   const browser = req.query.bw || req.useragent.browser;
   const os = req.query.os || req.useragent.os;
 
+  // IP
   let ip = req.headers['x-forwarded-for'] || req.ip;
   if(req.query.ip && net.isIP(req.query.ip)) {
     ip = req.query.ip;
@@ -72,7 +44,7 @@ router.get('/', (req, res) => {
   // Log structure
   const log = {
     session_id: sessionId,
-    event, // req, imp, alo
+    event, // err, imp, alo
     value,
     supply_tag_id: supplyTagId,
     demand_tag_id: demandTagId,
@@ -90,8 +62,8 @@ router.get('/', (req, res) => {
   };
 
   console.log('track >', log);
+  // Logger
   logger.info('log', log);
-
 
   res.writeHead(200, { 'Content-Type': 'image/gif' });
   res.end(TRANSPARENT_GIF_BUFFER, 'binary');

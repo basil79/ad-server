@@ -4,13 +4,14 @@ const xml = require('xml');
 const geoip = require('geoip-lite');
 const adserve = require('../models');
 const router = express.Router();
+const logger = require('../services/logger');
 
 router.get('/:supplyTagId', (req, res) => {
 
-  const supplyTagId = req.params.supplyTagId;
+  const supplyTagId = Number(req.params.supplyTagId);
+  const sessionId = req.hash;
 
   const host = req.protocol + '://' + req.get('host');
-  //const host = req.headers['host'];
   const origin = req.headers['origin'];
   let hostname = req.hostname;
   if(origin) {
@@ -22,24 +23,27 @@ router.get('/:supplyTagId', (req, res) => {
   console.log('hostname', hostname);
 
   // Queries
-  const width = req.query.w || 300; // Width
-  const height = req.query.h || 250; // Height
-  const visibility = req.query.v || 1; // Visibility
+  const width = Number(req.query.w) || 300; // Width
+  const height = Number(req.query.h) || 250; // Height
+  let countryCode = 'N/A';
+  const visibility = Number(req.query.v) || 1; // Visibility
   const url = req.query.url; // Page URL
   const domain = req.query.dom; // Domain
+  const device = req.query.dev || req.useragent.isMobile ? 'Mobile' : 'Desktop';
+  const browser = req.query.bw || req.useragent.browser;
+  const os = req.query.os || req.useragent.os;
 
-  const gdpr = req.query.gdpr || 0; // GDPR
+  const gdpr = Number(req.query.gdpr) || 0; // GDPR
   const gdprConsent = req.query.gdpr_consent || ''; // GDPR Consent
   const usp = req.query.usp || ''; // US Privacy
   const schain = req.query.schain || ''; // Supply Chain
 
-
+  // IP
   let ip = req.headers['x-forwarded-for'] || req.ip;
   if(req.query.ip && net.isIP(req.query.ip)) {
     ip = req.query.ip;
   }
 
-  let countryCode = 'N/A';
   // Geo, Country
   const geo = geoip.lookup(ip); // '87.70.14.10'
   if(geo) {
@@ -62,11 +66,7 @@ router.get('/:supplyTagId', (req, res) => {
   }
    */
 
-  const device = req.useragent.isMobile ? 'Mobile' : 'Desktop';
-
-  console.log('is mobile or tablet', req.useragent.browser, req.useragent.isMobile, req.useragent.isDesktop);
-
-  console.log('vast >', req.requestTime, supplyTagId, ip, countryCode, hostname, device, req.useragent.source);
+  console.log('vast >', req.requestTime, supplyTagId, os, browser, device, ip, countryCode, hostname, req.useragent.source);
   console.log(width, height, visibility, url, domain, gdpr, gdprConsent, usp, schain);
 
   const EMPTY_VAST = {
@@ -77,13 +77,37 @@ router.get('/:supplyTagId', (req, res) => {
     }]
   }
 
+  // TODO: filter by ip, countryCode, device, os, browser
   adserve
     .supplyTags()
     .get(supplyTagId)
     .then((supplyTag) => {
 
-      //console.log(supplyTag);
       if(supplyTag != null) {
+
+        // Log structure
+        const log = {
+          session_id: sessionId,
+          event: 'arq', // err, imp, alo
+          value: null,
+          supply_tag_id: supplyTagId,
+          demand_tag_id: null,
+          cpm: null,
+          floor: null,
+          country_code: countryCode, // Targeting group
+          ip,
+          visibility,
+          device,
+          domain,
+          browser,
+          os,
+          timestamp: new Date(req.requestTime).toISOString(),
+          request_time: req.requestTime
+        };
+
+        console.log('track >', log);
+        // Logger
+        logger.info('log', log);
 
         adserve
           .demandTags()
@@ -91,7 +115,7 @@ router.get('/:supplyTagId', (req, res) => {
           .then((demandTags) => {
 
             console.log(demandTags);
-            console.log(demandTags.total);
+
             if(demandTags.total != 0) {
 
               const VAST = {
@@ -102,9 +126,9 @@ router.get('/:supplyTagId', (req, res) => {
                       {_attr: {id: supplyTag.id}},
                       {
                         InLine: [
-                          {AdSystem: [{_attr: {version: '1'}}, 'AdServe']},
-                          {Error: {_cdata: host + '/track?evt=err&st=' + supplyTagId + '&val=[ERRORCODE]&sid=' + req.hash}},
-                          {Impression: {_cdata: host + '/track?evt=imp&st=' + supplyTagId + '&sid=' + req.hash}},
+                          {AdSystem: [{_attr: {version: '1'}}, 'AdServe.TV']},
+                          {Error: {_cdata: host + '/track?evt=err&st=' + supplyTagId + '&val=[ERRORCODE]&sid=' + sessionId}},
+                          {Impression: {_cdata: host + '/track?evt=imp&st=' + supplyTagId + '&sid=' + sessionId}},
                           {
                             Creatives: [
                               {
@@ -116,9 +140,9 @@ router.get('/:supplyTagId', (req, res) => {
                                       {
                                         AdParameters: {
                                           _cdata: JSON.stringify({
-                                            sid: req.hash,
-                                            st: supplyTag.id,
-                                            tags: demandTags.list,
+                                            sessionId,
+                                            supplyTagId: supplyTag.id,
+                                            demandTags: demandTags.list,
                                             width,
                                             height,
                                             visibility,
