@@ -16,7 +16,7 @@ module.exports = {
     eqeqeq: ['off'],
     //'func-style': ['error', 'declaration', { allowArrowFunctions: true }],
     'linebreak-style': ['warn', 'unix'],
-    'max-classes-per-file': ['error', 1],
+    'max-classes-per-file': ['error', 3],
     'no-alert': ['error'],
     //'no-console': ['error'],
     'no-const-assign': ['error'],
