@@ -2,6 +2,7 @@ const net = require('net');
 const express = require('express');
 const xml = require('xml');
 const geoip = require('geoip-lite');
+const { version } = require('../package.json');
 const adserve = require('../models');
 const router = express.Router();
 const logger = require('../services/logger');
@@ -120,25 +121,19 @@ router.get('/:supplyTagId', (req, res) => {
 
               const VAST = {
                 VAST: [
-                  {_attr: {version: '2.0'}},
-                  {
-                    Ad: [
-                      {_attr: {id: supplyTag.id}},
-                      {
-                        InLine: [
-                          {AdSystem: [{_attr: {version: '1'}}, 'AdServe.TV']},
-                          {Error: {_cdata: host + '/track?evt=err&st=' + supplyTagId + '&val=[ERRORCODE]&sid=' + sessionId}},
-                          {Impression: {_cdata: host + '/track?evt=imp&st=' + supplyTagId + '&sid=' + sessionId}},
-                          {
-                            Creatives: [
-                              {
-                                Creative: [
-                                  {_attr: {sequence: '1', AdID: supplyTagId}},
-                                  {
-                                    Linear: [
-                                      {Duration: '00:00:30'},
-                                      {
-                                        AdParameters: {
+                  { _attr: { version: '2.0' }},
+                  { Ad: [
+                      { _attr: { id: supplyTag.id }},
+                      { InLine: [
+                          { AdSystem: [{ _attr: { version: version }}, 'AdServe.TV']},
+                          { Error: { _cdata: host + '/track?evt=err&st=' + supplyTagId + '&val=[ERRORCODE]&sid=' + sessionId }},
+                          { Impression: { _cdata: host + '/track?evt=imp&st=' + supplyTagId + '&sid=' + sessionId }},
+                          { Creatives: [
+                              { Creative: [
+                                  { _attr: { sequence: '1', AdID: supplyTagId } },
+                                  { Linear: [
+                                      { Duration: '00:00:30' },
+                                      { AdParameters: {
                                           _cdata: JSON.stringify({
                                             sessionId,
                                             supplyTagId: supplyTag.id,
@@ -158,10 +153,8 @@ router.get('/:supplyTagId', (req, res) => {
                                           { Tracking: { _attr: { event: 'start'}, _cdata: ''}}
                                         ]
                                       },*/
-                                      {
-                                        MediaFiles: [
-                                          {
-                                            MediaFile: {
+                                      { MediaFiles: [
+                                          { MediaFile: {
                                               _attr: {
                                                 delivery: 'progressive',
                                                 type: 'application/javascript',
@@ -186,7 +179,7 @@ router.get('/:supplyTagId', (req, res) => {
                   }
                 ]
               };
-
+              // VAST
               res
                 .set('Content-Type', 'text/xml')
                 .send(xml(VAST, { indent: true, declaration: true }));
