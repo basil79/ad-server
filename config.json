@@ -1,10 +1,10 @@
 {
-  "jdbc" : {
-    "host" : "localhost",
-    "user" : "root",
-    "password" : "",
-    "database" : "adserve",
-    "multipleStatements" : true
+  "jdbc": {
+    "host": "localhost",
+    "user": "root",
+    "password": "",
+    "database": "adserve",
+    "multipleStatements": true
   },
   "elastic": {
     "node": "http://localhost:9200"
