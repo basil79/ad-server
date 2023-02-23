@@ -5,6 +5,7 @@ const geoip = require('geoip-lite');
 const { version } = require('../package.json');
 const adserve = require('../models');
 const router = express.Router();
+const config = require('../config.json');
 const logger = require('../services/logger');
 
 router.get('/:supplyTagId', (req, res) => {
@@ -162,7 +163,7 @@ router.get('/:supplyTagId', (req, res) => {
                                                 height: height,
                                                 apiFramework: 'VPAID'
                                               },
-                                              _cdata: ''
+                                              _cdata: config.vpaid ? config.vpaid.url : ''
                                             }
                                           }
                                         ]
